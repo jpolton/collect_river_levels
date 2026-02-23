@@ -42,7 +42,7 @@ except Exception as e:
 
 
 DEFAULT_DB_PATH = os.environ.get("TS_DB_PATH", "../docs/data/timeseries.sqlite")
-RETENTION_DAYS = int(os.environ.get("TS_RETENTION_DAYS", "7"))   # keep last 7 days
+RETENTION_DAYS = int(os.environ.get("TS_RETENTION_DAYS", "400"))   # keep more than a year. Aim to update to create yearly files
 FETCH_WINDOW_DAYS = int(os.environ.get("TS_FETCH_WINDOW_DAYS", "7"))  # refetch this window each run
 
 

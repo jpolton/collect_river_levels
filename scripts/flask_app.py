@@ -22,7 +22,7 @@ import os
 try:
     # Add parent directory to path to find nrw_api if running as script
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from nrw_api.nrw_api import fetch_historical_data
+    from nrw_api.nrw_api import fetch_nrw_station_data
 except Exception as e:
     print(f"Warning: NRW API not available ({e}). NRW stations will not work.")
 
@@ -68,26 +68,23 @@ STATIONS = {
 # Extra EA data on Finchett's Gutter etc: https://environment.data.gov.uk/flood-monitoring/id/stations?lat=53.1899&long=-2.8853&dist=10
 
 
-def fetch_station_data(station_id: str, ndays: int = 1) -> dict:
+def fetch_ea_station_data(station_id: str, ndays: int = 7) -> dict:
     """Fetch readings from Environment Agency flood monitoring API, for the last `ndays` days"""
     url = f"https://environment.data.gov.uk/flood-monitoring/id/stations/{station_id}/readings"
     #if ndays == 1:
     #    params = {"today": ""}
     #else:
-    date_end = np.datetime64('now')
+    date_end = np.datetime64('now') - np.timedelta64(int(1), 'D')
     # subtract ndays days from date_end
     date_start = date_end - np.timedelta64(int(ndays), 'D')
-
-    # Add 1 day to end date to ensure we capture all data through the current day
-    date_end_inclusive = date_end + np.timedelta64(1, 'D')
 
     py_dt_start = date_start.astype('datetime64[ms]').item()   # convert to Python datetime
     py_dt_end = date_end.astype('datetime64[ms]').item()
     print(py_dt_start.strftime('%Y-%m-%dT%H:%M:%SZ'))
     print(py_dt_end.strftime('%Y-%m-%dT%H:%M:%SZ'))
     # Use full ISO timestamp for enddate to capture all available data
-    #params = {"startdate": py_dt_start.strftime('%Y-%m-%d'), "enddate": py_dt_end.strftime('%Y-%m-%d')}
-    params = {"since": py_dt_start.strftime('%Y-%m-%dT00:00:00Z'), "_limit": 800}
+    params = {"startdate": py_dt_start.strftime('%Y-%m-%d'), "enddate": py_dt_end.strftime('%Y-%m-%d')}
+    #params = {"since": py_dt_start.strftime('%Y-%m-%dT00:00:00Z'), "_limit": 800}
     try:
         response = requests.get(url, params=params, timeout=10)
         response.raise_for_status()
@@ -109,7 +106,7 @@ def get_station_data(station_key: str, ndays: int = 1) -> dict:
     
     try:
         if station["source"] == "EA":
-            data = fetch_station_data(station["id"], ndays=ndays)
+            data = fetch_ea_station_data(station["id"], ndays=ndays)
             readings = [
                 {
                     "dateTime": item["dateTime"],
@@ -119,7 +116,7 @@ def get_station_data(station_key: str, ndays: int = 1) -> dict:
             ]
         elif station["source"] == "NRW":
             parameter_id = station.get("parameter_id", 41) # Default to 41 if not specified
-            data = fetch_historical_data(station["id"], ndays=ndays, parameter=parameter_id)
+            data = fetch_nrw_station_data(station["id"], ndays=ndays, parameter=parameter_id)
             readings = [
                 {
                     "dateTime": item["dateTime"],
