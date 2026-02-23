@@ -37,7 +37,7 @@ except Exception as e:
         "Make sure db_updater.py is in the same directory as flask_app.py"
     )
 # STATIONS definition and get_station_data are taken from your file.  # noqa: E402
-# (Shoothill handling and EA logic remain identical to the Flask app.)  # noqa: E402
+# EA logic remains identical to the Flask app.  # noqa: E402
 # ref: flask_app.py 
 
 
@@ -124,7 +124,7 @@ def update_once(conn: sqlite3.Connection, fetch_days: int, retention_days: int) 
     total_inserts = 0
     per_station = {}
 
-    # We reuse your Flask app's "get_station_data" which handles EA and Shoothill uniformly.
+    # We reuse your Flask app's "get_station_data" which handles EA and NRW uniformly.
     # This returns: {"station": {...}, "readings": [ {dateTime, value}, ...], "stats": {...}}
     # ref: flask_app.py 
     for station_key, meta in STATIONS.items():
@@ -157,7 +157,7 @@ def sleep_until_next_quarter():
 def main():
     parser = argparse.ArgumentParser(description="Persist last-7-days time series for STATIONS into SQLite.")
     parser.add_argument("--db", default=DEFAULT_DB_PATH, help="Path to SQLite database (default: ./timeseries.sqlite)")
-    parser.add_argument("--days", type=int, default=RETENTION_DAYS, help="Retention window in days (default: 7)")
+    parser.add_argument("--days", type=int, default=RETENTION_DAYS, help="Retention window in days (default: 400)")
     parser.add_argument("--fetch-days", type=int, default=FETCH_WINDOW_DAYS,
                         help="How many recent days to (re)fetch each run (default: 7)")
     parser.add_argument("--once", action="store_true", help="Run once then exit")

@@ -4,7 +4,7 @@ Flask web app for river water level monitoring.
 conda activate weir_waterlevel_web_env
 python flask_app.py
 
-Access at http://localhost:5000 in your browser.
+Access at http://localhost:5002 in your browser.
 """
 
 from flask import Flask, render_template, jsonify, request
@@ -12,7 +12,6 @@ import requests
 import pandas as pd
 from datetime import datetime
 import numpy as np
-import json
 import sys
 import os
 
@@ -71,20 +70,14 @@ STATIONS = {
 def fetch_ea_station_data(station_id: str, ndays: int = 7) -> dict:
     """Fetch readings from Environment Agency flood monitoring API, for the last `ndays` days"""
     url = f"https://environment.data.gov.uk/flood-monitoring/id/stations/{station_id}/readings"
-    #if ndays == 1:
-    #    params = {"today": ""}
-    #else:
     date_end = np.datetime64('now') - np.timedelta64(int(1), 'D')
     # subtract ndays days from date_end
     date_start = date_end - np.timedelta64(int(ndays), 'D')
 
     py_dt_start = date_start.astype('datetime64[ms]').item()   # convert to Python datetime
     py_dt_end = date_end.astype('datetime64[ms]').item()
-    print(py_dt_start.strftime('%Y-%m-%dT%H:%M:%SZ'))
-    print(py_dt_end.strftime('%Y-%m-%dT%H:%M:%SZ'))
     # Use full ISO timestamp for enddate to capture all available data
     params = {"startdate": py_dt_start.strftime('%Y-%m-%d'), "enddate": py_dt_end.strftime('%Y-%m-%d')}
-    #params = {"since": py_dt_start.strftime('%Y-%m-%dT00:00:00Z'), "_limit": 800}
     try:
         response = requests.get(url, params=params, timeout=10)
         response.raise_for_status()
