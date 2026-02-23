@@ -8,3 +8,6 @@ Next steps are to:
 * manage these files so they don't get combersome
 * to create yearly netCDF files
 * Create a method to check on the data.
+
+## python environment
+conda activate weir_waterlevel_web_env
