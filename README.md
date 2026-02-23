@@ -1,13 +1,12 @@
-# DeeRiverLevels
+# river_data
 
 ### [Click here for graph](https://jpolton.github.io/DeeRiverLevels/index.html)
 
+The idea is to download River Dee data from the near realtime API (EA and NRW) to accumulate yearly files of data. Not all stations allow access to historical data, so the aim here is to accumate some.
 
+At present the idea is to launch a weekly script to obtain a week of data up to yesterday. This is stored in a sqlite database and converted to a JSON file.
 
-Useage (when running locally on branch local-server):
-
-conda activate weir_waterlevel_web_env
-
-(weir_waterlevel_web_env) jelt@LIVMAC13 DeeRiverLevels/scripts % python db_updater.py --db ../docs/data/timeseries.sqlite --once --days 7 --log-file test_update.log
-
-(weir_waterlevel_web_env) jelt@LIVMAC13 DeeRiverLevels/scripts % python db_plotly.py
+Next steps are to:
+* manage these files so they don't get combersome
+* to create yearly netCDF files
+* Create a method to check on the data.
