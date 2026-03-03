@@ -41,6 +41,10 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/*.json
+          git add docs/data/*.json docs/data/test_update.log
           git commit -m "Update JSON ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))" || echo "No changes"
+          
+          # safe fast‑forward pull
+          git pull --ff-only
+          
           git push
