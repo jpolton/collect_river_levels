@@ -31,7 +31,7 @@ jobs:
           # Add API keys as needed via repository "Actions secrets"
           NRW_KEY: ${{ secrets.NRW_KEY }}
         run: |
-          python scripts/db_updater.py --db docs/data/timeseries.sqlite --once --days 7 --log-file test_update.log
+          python scripts/db_updater.py --db docs/data/timeseries.sqlite --once --fetch-days 7 --log-file test_update.log
           
       - name: Generate station JSON
         run: |
