@@ -45,6 +45,11 @@ DEFAULT_DB_PATH = os.environ.get("TS_DB_PATH", "../docs/data/timeseries.sqlite")
 DEFAULT_OUTPUT_DIR = "../docs/data"
 
 
+def ts_utc_to_str(ts: int) -> str:
+    """Convert a UTC Unix timestamp to a formatted datetime string (YYYY-MM-DD HH:MM:SS)."""
+    return datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+
+
 def export_station_to_json(conn: sqlite3.Connection, station_key: str, output_dir: str):
     """
     Export a single station's data to a JSON file.
@@ -80,7 +85,7 @@ def export_station_to_json(conn: sqlite3.Connection, station_key: str, output_di
         return
     
     # Build the data array
-    data = [{"ts_utc": ts, "value": val} for ts, val in rows]
+    data = [{"datetime": ts_utc_to_str(ts), "ts_utc": ts, "value": val} for ts, val in rows]
     
     # Create the output JSON structure
     output = {
