@@ -28,8 +28,8 @@ jobs:
         env:
           OUT_DIR: docs/data
         run: |
-          python scripts/check_gaps.py --log-file $OUT_DIR/gap_log.log
-          python scripts/db_updater.py --db $OUT_DIR/timeseries.sqlite --backfill-days 60 --once
+          python scripts/check_gaps.py --log-file $OUT_DIR/test_update.log
+          python scripts/db_updater.py --db $OUT_DIR/timeseries.sqlite --backfill-days 60 --once --log-file $OUT_DIR/test_update.log
 
       - name: Generate station DB
         env:
