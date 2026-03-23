@@ -2,7 +2,7 @@ name: Refresh JSON for GitHub Pages
 
 on:
   schedule:
-    - cron: "0 16 * * 1"   # Wednesday 12pm
+    - cron: "30 21 * * 1"   # Wednesday 12pm
   workflow_dispatch:
 
 jobs:
@@ -24,6 +24,13 @@ jobs:
           pip install Flask pandas requests numpy python-dateutil
           
 
+      - name: Review Gaps and backfill
+        env:
+          OUT_DIR: docs/data
+        run: |
+          python scripts/check_gaps.py --log-file $OUT_DIR/gap_log.log
+          python scripts/db_updater.py --db $OUT_DIR/timeseries.sqlite --backfill-days 60 --once
+
       - name: Generate station DB
         env:
           OUT_DIR: docs/data
@@ -31,11 +38,11 @@ jobs:
           # Add API keys as needed via repository "Actions secrets"
           NRW_KEY: ${{ secrets.NRW_KEY }}
         run: |
-          python scripts/db_updater.py --db docs/data/timeseries.sqlite --once --fetch-days 10 --log-file docs/data/test_update.log
+          python scripts/db_updater.py --db $OUT_DIR/timeseries.sqlite --once --fetch-days $NDAYS --log-file $OUT_DIR/test_update.log
           
       - name: Generate station JSON
         run: |
-          python scripts/db_to_json.py --db docs/data/timeseries.sqlite --output-dir docs/data
+          python scripts/db_to_json.py --db $OUT_DIR/timeseries.sqlite --output-dir $OUT_DIR
 
       - name: Commit & push if changed
         run: |
