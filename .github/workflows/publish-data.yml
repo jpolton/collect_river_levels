@@ -35,7 +35,7 @@ jobs:
       - name: Generate station DB
         env:
           OUT_DIR: docs/data
-          NDAYS: "7"
+          NDAYS: "60"
           # Add API keys as needed via repository "Actions secrets"
           NRW_KEY: ${{ secrets.NRW_KEY }}
         run: |
