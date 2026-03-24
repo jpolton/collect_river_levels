@@ -42,8 +42,8 @@ except Exception as e:
 
 
 DEFAULT_DB_PATH = os.environ.get("TS_DB_PATH", "../docs/data/timeseries.sqlite")
-RETENTION_DAYS = int(os.environ.get("TS_RETENTION_DAYS", "7"))   # keep last 7 days
-FETCH_WINDOW_DAYS = int(os.environ.get("TS_FETCH_WINDOW_DAYS", "7"))  # refetch this window each run
+RETENTION_DAYS = int(os.environ.get("TS_RETENTION_DAYS", "400"))   # keep last 400 days
+FETCH_WINDOW_DAYS = int(os.environ.get("TS_FETCH_WINDOW_DAYS", "10"))  # refetch this window each run
 MIN_FETCH_SECONDS = 900  # always fetch at least 15 mins to catch the very latest readings
 
 

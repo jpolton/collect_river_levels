@@ -42,7 +42,7 @@ jobs:
         run: |
           python scripts/db_to_json.py --db $OUT_DIR/timeseries.sqlite --output-dir $OUT_DIR
 
-      - name: Review Gaps and backfill
+      - name: Review Gaps (and backfill - commented out)
         shell: bash
         env:
           OUT_DIR: docs/data

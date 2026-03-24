@@ -95,53 +95,70 @@ def fetch_station_data(station_id: str, ndays: int = 1) -> dict:
         'Accept': 'application/json'
     }
     
-    try:
-        response = requests.get(url, params=params, headers=headers, timeout=(5, 30))
-        
-        # If blocked by WAF (403), retry once with a standard browser fingerprint
-        if response.status_code == 403:
-            fallback_headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.5',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Connection': 'keep-alive',
-                'Upgrade-Insecure-Requests': '1',
-                'Sec-Fetch-Dest': 'document',
-                'Sec-Fetch-Mode': 'navigate',
-                'Sec-Fetch-Site': 'none',
-                'Sec-Fetch-User': '?1'
-            }
-            response = requests.get(url, params=params, headers=fallback_headers, timeout=(5, 30))
+    import time
+    
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(url, params=params, headers=headers, timeout=(10, 60))
             
-        # Second fallback: use cURL via subprocess (bypasses requests TLS fingerprint blocking on Azure App Gateway)
-        if response.status_code == 403:
-            print("Python requests blocked by WAF. Falling back to cURL...")
-            import subprocess
-            from urllib.parse import urlencode
-            import json as json_lib
-            
-            curl_url = f"{url}?{urlencode(params)}"
-            result = subprocess.run(['curl', '-s', '-H', 'Accept: application/json', curl_url], capture_output=True, text=True)
-            
-            if result.returncode == 0:
-                try:
-                    return json_lib.loads(result.stdout)
-                except json_lib.JSONDecodeError:
-                    print(f"cURL returned non-JSON response: {result.stdout[:200]}")
-            else:
-                print(f"cURL fallback failed: {result.stderr}")
+            # If blocked by WAF (403), retry once with a standard browser fingerprint
+            if response.status_code == 403:
+                fallback_headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.5',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'Connection': 'keep-alive',
+                    'Upgrade-Insecure-Requests': '1',
+                    'Sec-Fetch-Dest': 'document',
+                    'Sec-Fetch-Mode': 'navigate',
+                    'Sec-Fetch-Site': 'none',
+                    'Sec-Fetch-User': '?1'
+                }
+                response = requests.get(url, params=params, headers=fallback_headers, timeout=(10, 60))
                 
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.HTTPError as e:
-        # More detailed error handling for HTTP errors
-        print(f"HTTP Error: {e.response.status_code} - {e.response.reason}")
-        print(f"Response: {e.response.text}")
-        return {"items": []}
-    except Exception as e:
-        print(f"Error fetching EA data: {e}")
-        return {"items": []}
+            # Second fallback: use cURL via subprocess (bypasses requests TLS fingerprint blocking on Azure App Gateway)
+            if response.status_code == 403:
+                print("Python requests blocked by WAF. Falling back to cURL...")
+                import subprocess
+                from urllib.parse import urlencode
+                import json as json_lib
+                
+                curl_url = f"{url}?{urlencode(params)}"
+                result = subprocess.run(['curl', '-s', '-H', 'Accept: application/json', curl_url], capture_output=True, text=True)
+                
+                if result.returncode == 0:
+                    try:
+                        return json_lib.loads(result.stdout)
+                    except json_lib.JSONDecodeError:
+                        print(f"cURL returned non-JSON response: {result.stdout[:200]}")
+                else:
+                    print(f"cURL fallback failed: {result.stderr}")
+                    
+            response.raise_for_status()
+            return response.json()
+            
+        except requests.exceptions.Timeout as e:
+            print(f"Timeout fetching EA data on attempt {attempt + 1}: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(5)
+                continue
+        except requests.exceptions.ConnectionError as e:
+            print(f"Connection error fetching EA data on attempt {attempt + 1}: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(5)
+                continue
+        except requests.exceptions.HTTPError as e:
+            # More detailed error handling for HTTP errors
+            print(f"HTTP Error: {e.response.status_code} - {e.response.reason}")
+            print(f"Response: {e.response.text}")
+            return {"items": []}
+        except Exception as e:
+            print(f"Error fetching EA data: {e}")
+            return {"items": []}
+            
+    return {"items": []}
 
 
 
