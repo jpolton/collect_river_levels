@@ -101,7 +101,7 @@ def export_station_to_json(conn: sqlite3.Connection, station_key: str, output_di
     with open(output_path, "w") as f:
         json.dump(output, f)
     
-    print(f"✓ Exported {len(data)} readings for '{station_key}' to {output_path}")
+    print(f"[OK] Exported {len(data)} readings for '{station_key}' to {output_path}")
 
 
 def export_all_stations(db_path: str, output_dir: str):
@@ -135,7 +135,7 @@ def export_all_stations(db_path: str, output_dir: str):
         export_station_to_json(conn, station_key, output_dir)
     
     conn.close()
-    print(f"\n✓ Export complete! {len(station_keys)} file(s) written.")
+    print(f"\n[OK] Export complete! {len(station_keys)} file(s) written.")
 
 
 def main():
