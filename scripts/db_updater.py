@@ -37,13 +37,14 @@ except Exception as e:
         "Make sure db_updater.py is in the same directory as flask_app.py"
     )
 # STATIONS definition and get_station_data are taken from your file.  # noqa: E402
-# EA logic remains identical to the Flask app.  # noqa: E402
+# (Shoothill handling and EA logic remain identical to the Flask app.)  # noqa: E402
 # ref: flask_app.py 
 
 
 DEFAULT_DB_PATH = os.environ.get("TS_DB_PATH", "../docs/data/timeseries.sqlite")
-RETENTION_DAYS = int(os.environ.get("TS_RETENTION_DAYS", "400"))   # keep more than a year. Aim to update to create yearly files
+RETENTION_DAYS = int(os.environ.get("TS_RETENTION_DAYS", "7"))   # keep last 7 days
 FETCH_WINDOW_DAYS = int(os.environ.get("TS_FETCH_WINDOW_DAYS", "7"))  # refetch this window each run
+MIN_FETCH_SECONDS = 900  # always fetch at least 15 mins to catch the very latest readings
 
 
 def utc_now():
@@ -106,6 +107,17 @@ def save_readings(conn: sqlite3.Connection, station_key: str, station_meta: dict
     return cur.rowcount  # number of *attempted* inserts (ignored duplicates won't count)
 
 
+def latest_stored_ts(conn: sqlite3.Connection, station_key: str) -> int | None:
+    """Return the most recent ts_utc (epoch seconds) stored for *station_key*, or None."""
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT MAX(ts_utc) FROM readings WHERE station_key = ?;",
+        (station_key,),
+    )
+    row = cur.fetchone()
+    return row[0] if row and row[0] is not None else None
+
+
 def prune_old(conn: sqlite3.Connection, retention_days: int):
     cutoff = utc_now() - timedelta(days=retention_days)
     cutoff_epoch = int(cutoff.timestamp())
@@ -116,25 +128,50 @@ def prune_old(conn: sqlite3.Connection, retention_days: int):
     return deleted
 
 
+
+
 def update_once(conn: sqlite3.Connection, fetch_days: int, retention_days: int) -> dict:
     """
-    Fetch last `fetch_days` for each station (idempotent) and prune old data.
-    Returns counters for logging/monitoring.
+    Fetch only the data not yet stored for each station, then prune old data.
+
+    For each station the function checks the most recent timestamp already in
+    the database and requests only the window between that point and now.
+    If no data exists yet the full *fetch_days* window is requested.
     """
     total_inserts = 0
     per_station = {}
+    now_epoch = int(utc_now().timestamp())
 
-    # We reuse your Flask app's "get_station_data" which handles EA and NRW uniformly.
+    # We reuse your Flask app's "get_station_data" which handles EA and Shoothill uniformly.
     # This returns: {"station": {...}, "readings": [ {dateTime, value}, ...], "stats": {...}}
-    # ref: flask_app.py 
+    # ref: flask_app.py
     for station_key, meta in STATIONS.items():
         try:
-            resp = get_station_data(station_key, ndays=fetch_days)
+            latest_ts = latest_stored_ts(conn, station_key)
+            if latest_ts is None:
+                # No data yet — fetch the full requested window.
+                days_to_fetch = fetch_days
+                logging.info(f"{station_key}: No data in DB, fetching {fetch_days} days")
+            else:
+                gap_seconds = now_epoch - latest_ts
+                logging.info(f"{station_key}: gap_seconds {gap_seconds}s")
+                if gap_seconds < MIN_FETCH_SECONDS:
+                    logging.info(
+                        f"{station_key}: already up-to-date "
+                        f"(latest reading {gap_seconds}s ago), skipping fetch"
+                    )
+                    per_station[station_key] = 0
+                    continue
+                # Round up to the nearest whole day (minimum 1) so the API window
+                # covers the entire gap.  Cap at fetch_days so we never over-fetch.
+                days_to_fetch = min(fetch_days, max(1, math.ceil(gap_seconds / 86400)))
+
+            resp = get_station_data(station_key, ndays=days_to_fetch)
             readings = resp.get("readings", [])
             n = save_readings(conn, station_key, meta, readings)
             per_station[station_key] = n
             total_inserts += n
-            logging.info(f"{station_key}: {n} new readings (window={fetch_days}d)")
+            logging.info(f"{station_key}: {n} new readings (window={days_to_fetch}d)")
         except Exception as e:
             logging.exception(f"Error processing station '{station_key}': {e}")
             per_station[station_key] = 0
@@ -157,7 +194,7 @@ def sleep_until_next_quarter():
 def main():
     parser = argparse.ArgumentParser(description="Persist last-7-days time series for STATIONS into SQLite.")
     parser.add_argument("--db", default=DEFAULT_DB_PATH, help="Path to SQLite database (default: ./timeseries.sqlite)")
-    parser.add_argument("--days", type=int, default=RETENTION_DAYS, help="Retention window in days (default: 400)")
+    parser.add_argument("--days", type=int, default=RETENTION_DAYS, help="Retention window in days (default: 7)")
     parser.add_argument("--fetch-days", type=int, default=FETCH_WINDOW_DAYS,
                         help="How many recent days to (re)fetch each run (default: 7)")
     parser.add_argument("--once", action="store_true", help="Run once then exit")

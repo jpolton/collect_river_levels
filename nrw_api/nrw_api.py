@@ -30,9 +30,9 @@ except Exception as e:
 
 from datetime import datetime, timedelta
 
-def fetch_nrw_station_data(station_id, ndays=7, parameter=41):
+def fetch_historical_data(station_id, ndays=3, parameter=41):
     # Calculate date range
-    to_date_dt = datetime.now() - timedelta(days=1) # Ensure the to_date is from the upcoming midnight
+    to_date_dt = datetime.now() + timedelta(days=1) # Ensure the to_date is from the upcoming midnight
     from_date_dt = to_date_dt - timedelta(days=ndays)
     
     # Format dates as strings (YYYY-MM-DD)
@@ -79,8 +79,8 @@ if __name__ == "__main__":
         ndays = 3
         station_id = 4173 # NRW: Ironbridge
         
-        data = fetch_nrw_station_data(station_id, ndays, parameter=41)
-    
+        data = fetch_historical_data(station_id, ndays, parameter=41)
+        
         if 'items' in data and len(data['items']) > 0:
             readings = data['items']
             print(f"Count: {len(readings)}")
