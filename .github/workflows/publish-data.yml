@@ -2,7 +2,7 @@ name: Refresh JSON for GitHub Pages
 
 on:
   schedule:
-    - cron: "0 12 * * 2"   # Wednesday 12pm
+    - cron: "0 12 * * 2"   # Tues 12pm
   workflow_dispatch:
 
 jobs:
@@ -26,7 +26,7 @@ jobs:
       - name: Generate station DB
         env:
           OUT_DIR: docs/data
-          NDAYS: "60"
+          NDAYS: "10"
           # Add API keys as needed via repository "Actions secrets"
           NRW_KEY: ${{ secrets.NRW_KEY }}
         run: |
