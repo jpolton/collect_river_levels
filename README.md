@@ -1,5 +1,7 @@
 # collect_river_data
 
+### [Click here for graph](https://jpolton.github.io/collect_river_levels/index.html)
+
 The idea is to download River Dee data from the near realtime API (EA and NRW) to accumulate yearly files of data. Not all stations allow access to historical data, so the aim here is to accumate some.
 
 At present the idea is to launch a weekly script to obtain a week of data up to yesterday. This is stored in a sqlite database and converted to a JSON file.
