@@ -213,6 +213,7 @@
         <label><input type="radio" name="range" value="1" /> 24 hours</label>
         <label><input type="radio" name="range" value="3" /> 3 days</label>
         <label><input type="radio" name="range" value="7" checked /> 7 days</label>
+        <label><input type="radio" name="range" value="all" /> All data</label>
       </div>
 
       <div style="display:flex; gap:8px; margin-top:12px;">
@@ -381,6 +382,7 @@
     }
 
     function filterByDays(rows, ndays) {
+      if (ndays === 'all') return rows;
       const cutoff = Date.now() - ndays * 24 * 60 * 60 * 1000;
       return rows.filter(r => r.t.getTime() >= cutoff);
     }
@@ -401,7 +403,7 @@
 
     function getSelectedDays() {
       const v = document.querySelector('input[name="range"]:checked')?.value || "7";
-      return parseInt(v, 10);
+      return v === 'all' ? 'all' : parseInt(v, 10);
     }
 
     async function render() {
@@ -493,9 +495,13 @@
 
 
       const isMobile = window.innerWidth < 850;
+      const titleText = ndays === 'all' 
+        ? 'Water levels — All available data (UTC)'
+        : `Water levels — last ${ndays} day${ndays > 1 ? 's' : ''} (UTC)`;
+
       const layout = {
         title: {
-          text: `Water levels — last ${ndays} day${ndays > 1 ? 's' : ''} (UTC)`,
+          text: titleText,
           y: 0.98,
           yanchor: 'top',
           pad: { t: 10 }
