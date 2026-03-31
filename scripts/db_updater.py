@@ -130,7 +130,7 @@ def prune_old(conn: sqlite3.Connection, retention_days: int):
 
 
 
-def update_once(conn: sqlite3.Connection, fetch_days: int, retention_days: int) -> dict:
+def update_once(conn: sqlite3.Connection, fetch_days: int, retention_days: int, backfill: int = 0) -> dict:
     """
     Fetch only the data not yet stored for each station, then prune old data.
 
@@ -148,10 +148,11 @@ def update_once(conn: sqlite3.Connection, fetch_days: int, retention_days: int) 
     for station_key, meta in STATIONS.items():
         try:
             latest_ts = latest_stored_ts(conn, station_key)
-            if latest_ts is None:
-                # No data yet — fetch the full requested window.
+            if latest_ts is None or backfill == 1:
+                # No data yet or backfilling — fetch the full requested window.
                 days_to_fetch = fetch_days
-                logging.info(f"{station_key}: No data in DB, fetching {fetch_days} days")
+                reason = "No data in DB" if latest_ts is None else "Backfill"
+                logging.info(f"{station_key}: {reason}, fetching {fetch_days} days")
             else:
                 gap_seconds = now_epoch - latest_ts
                 logging.info(f"{station_key}: gap_seconds {gap_seconds}s")
@@ -222,7 +223,7 @@ def main():
     # optional backfill (idempotent)
     if args.backfill_days and args.backfill_days > 0:
         logging.info(f"Backfill: fetching last {args.backfill_days} day(s)")
-        update_once(conn, fetch_days=args.backfill_days, retention_days=args.days)
+        update_once(conn, fetch_days=args.backfill_days, retention_days=args.days, backfill=1)
 
     # run once or loop
     if args.once and not args.loop:
