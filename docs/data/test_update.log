@@ -280,3 +280,82 @@ empty
 2026-04-01 09:49:37,934 INFO   No gaps detected.
 2026-04-01 09:49:37,934 INFO ============================================================
 2026-04-01 09:49:37,934 INFO Done.
+2026-04-01 20:17:09,595 INFO Backfill: fetching last 90 day(s)
+2026-04-01 20:17:09,595 INFO chester: Backfill, fetching 90 days
+2026-04-01 20:17:12,100 INFO chester: 800 new readings (window=90d)
+2026-04-01 20:17:12,101 INFO liverpool: Backfill, fetching 90 days
+2026-04-01 20:17:14,013 INFO liverpool: 800 new readings (window=90d)
+2026-04-01 20:17:14,013 INFO ironbridge: No data in DB, fetching 90 days
+2026-04-01 20:17:27,546 INFO ironbridge: 9234 new readings (window=90d)
+2026-04-01 20:17:27,548 INFO farndon: No data in DB, fetching 90 days
+2026-04-01 20:17:41,192 INFO farndon: 9423 new readings (window=90d)
+2026-04-01 20:17:41,192 INFO queens_park: Backfill, fetching 90 days
+2026-04-01 20:17:44,322 INFO queens_park: 199 new readings (window=90d)
+2026-04-01 20:17:44,323 INFO Pruned 0 old rows (> 400 days)
+2026-04-01 20:17:44,323 INFO chester: gap_seconds 1006364s
+2026-04-01 20:17:46,795 INFO chester: 800 new readings (window=10d)
+2026-04-01 20:17:46,795 INFO liverpool: gap_seconds 1006364s
+2026-04-01 20:17:50,052 INFO liverpool: 0 new readings (window=10d)
+2026-04-01 20:17:50,052 INFO ironbridge: gap_seconds 1064s
+2026-04-01 20:17:50,585 INFO ironbridge: 0 new readings (window=1d)
+2026-04-01 20:17:50,585 INFO farndon: gap_seconds 1064s
+2026-04-01 20:17:51,123 INFO farndon: 0 new readings (window=1d)
+2026-04-01 20:17:51,125 INFO queens_park: gap_seconds 51464s
+2026-04-01 20:17:54,688 INFO queens_park: 0 new readings (window=1d)
+2026-04-01 20:17:54,688 INFO Pruned 0 old rows (> 400 days)
+2026-04-01 20:17:55,968 INFO ============================================================
+2026-04-01 20:17:55,968 INFO File: chester.json
+2026-04-01 20:17:55,968 INFO ============================================================
+2026-04-01 20:17:55,973 INFO   Records  : 3421
+2026-04-01 20:17:55,973 INFO   Range    : 2026-02-16 15:30:00 UTC  ->  2026-03-30 08:45:00 UTC
+2026-04-01 20:17:55,975 INFO   Interval : 15-minute (900 s)
+2026-04-01 20:17:55,975 INFO   8 gap(s) found -- 585 missing timestep(s) total
+2026-04-01 20:17:55,975 INFO   First gap started 40.6 days ago (2026-02-20 04:45:00 UTC)
+2026-04-01 20:17:55,975 INFO   Gap   1: 2026-02-20 04:45:00 UTC  ->  2026-02-22 00:00:00 UTC  |  172 missing step(s)  (43.2 h)
+2026-04-01 20:17:55,975 INFO   Gap   2: 2026-02-22 10:00:00 UTC  ->  2026-02-22 10:30:00 UTC  |  1 missing step(s)  (0.5 h)
+2026-04-01 20:17:55,975 INFO   Gap   3: 2026-02-28 04:45:00 UTC  ->  2026-03-03 00:00:00 UTC  |  268 missing step(s)  (67.2 h)
+2026-04-01 20:17:55,975 INFO   Gap   4: 2026-03-11 07:45:00 UTC  ->  2026-03-12 00:00:00 UTC  |  64 missing step(s)  (16.2 h)
+2026-04-01 20:17:55,975 INFO   Gap   5: 2026-03-21 04:45:00 UTC  ->  2026-03-22 00:15:00 UTC  |  77 missing step(s)  (19.5 h)
+2026-04-01 20:17:55,975 INFO   Gap   6: 2026-03-25 18:15:00 UTC  ->  2026-03-25 18:45:00 UTC  |  1 missing step(s)  (0.5 h)
+2026-04-01 20:17:55,975 INFO   Gap   7: 2026-03-27 23:15:00 UTC  ->  2026-03-27 23:45:00 UTC  |  1 missing step(s)  (0.5 h)
+2026-04-01 20:17:55,975 INFO   Gap   8: 2026-03-28 02:30:00 UTC  ->  2026-03-28 03:00:00 UTC  |  1 missing step(s)  (0.5 h)
+2026-04-01 20:17:55,975 INFO ============================================================
+2026-04-01 20:17:55,975 INFO File: farndon.json
+2026-04-01 20:17:55,975 INFO ============================================================
+2026-04-01 20:17:55,984 INFO   Records  : 9423
+2026-04-01 20:17:55,984 INFO   Range    : 2026-01-02 00:00:00 UTC  ->  2026-04-01 20:00:00 UTC
+2026-04-01 20:17:55,986 INFO   Interval : 15-minute (900 s)
+2026-04-01 20:17:55,987 INFO   1 gap(s) found -- 2 missing timestep(s) total
+2026-04-01 20:17:55,987 INFO   First gap started 70.4 days ago (2026-01-21 10:15:00 UTC)
+2026-04-01 20:17:55,987 INFO   Gap   1: 2026-01-21 10:15:00 UTC  ->  2026-01-21 11:00:00 UTC  |  2 missing step(s)  (0.8 h)
+2026-04-01 20:17:55,987 INFO ============================================================
+2026-04-01 20:17:55,987 INFO File: ironbridge.json
+2026-04-01 20:17:55,987 INFO ============================================================
+2026-04-01 20:17:55,995 INFO   Records  : 9234
+2026-04-01 20:17:55,995 INFO   Range    : 2026-01-02 00:00:00 UTC  ->  2026-04-01 20:00:00 UTC
+2026-04-01 20:17:55,997 INFO   Interval : 15-minute (900 s)
+2026-04-01 20:17:55,997 INFO   2 gap(s) found -- 129 missing timestep(s) total
+2026-04-01 20:17:55,998 INFO   First gap started 84.2 days ago (2026-01-07 15:00:00 UTC)
+2026-04-01 20:17:55,998 INFO   Gap   1: 2026-01-07 15:00:00 UTC  ->  2026-01-07 21:00:00 UTC  |  23 missing step(s)  (6.0 h)
+2026-04-01 20:17:55,998 INFO   Gap   2: 2026-02-07 20:15:00 UTC  ->  2026-02-08 23:00:00 UTC  |  106 missing step(s)  (26.8 h)
+2026-04-01 20:17:55,998 INFO ============================================================
+2026-04-01 20:17:55,998 INFO File: liverpool.json
+2026-04-01 20:17:55,998 INFO ============================================================
+2026-04-01 20:17:56,000 INFO   Records  : 2622
+2026-04-01 20:17:56,000 INFO   Range    : 2026-02-16 15:30:00 UTC  ->  2026-03-21 04:45:00 UTC
+2026-04-01 20:17:56,001 INFO   Interval : 15-minute (900 s)
+2026-04-01 20:17:56,001 INFO   4 gap(s) found -- 504 missing timestep(s) total
+2026-04-01 20:17:56,001 INFO   First gap started 40.6 days ago (2026-02-20 04:45:00 UTC)
+2026-04-01 20:17:56,001 INFO   Gap   1: 2026-02-20 04:45:00 UTC  ->  2026-02-22 00:00:00 UTC  |  172 missing step(s)  (43.2 h)
+2026-04-01 20:17:56,001 INFO   Gap   2: 2026-02-28 03:00:00 UTC  ->  2026-02-28 03:30:00 UTC  |  1 missing step(s)  (0.5 h)
+2026-04-01 20:17:56,001 INFO   Gap   3: 2026-02-28 05:00:00 UTC  ->  2026-03-03 00:00:00 UTC  |  267 missing step(s)  (67.0 h)
+2026-04-01 20:17:56,001 INFO   Gap   4: 2026-03-11 07:45:00 UTC  ->  2026-03-12 00:00:00 UTC  |  64 missing step(s)  (16.2 h)
+2026-04-01 20:17:56,001 INFO ============================================================
+2026-04-01 20:17:56,001 INFO File: queens_park.json
+2026-04-01 20:17:56,001 INFO ============================================================
+2026-04-01 20:17:56,003 INFO   Records  : 1047
+2026-04-01 20:17:56,003 INFO   Range    : 2026-02-16 16:00:00 UTC  ->  2026-04-01 06:00:00 UTC
+2026-04-01 20:17:56,003 INFO   Interval : hourly (3600 s)
+2026-04-01 20:17:56,003 INFO   No gaps detected.
+2026-04-01 20:17:56,003 INFO ============================================================
+2026-04-01 20:17:56,003 INFO Done.
