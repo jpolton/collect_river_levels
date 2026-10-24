@@ -2,7 +2,7 @@ name: Refresh JSON for GitHub Pages
 
 on:
   schedule:
-    - cron: "37 3 * * 4"  
+    - cron: "37 3 * * 4"  # Runs at 03:37 on Thursday (4th day of week)      
   workflow_dispatch:
 
 jobs:
